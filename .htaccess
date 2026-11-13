@@ -1,0 +1,22 @@
+# Forward all requests to the Laravel public directory so the site
+# works from the domain root without /public in the URL.
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Allow ACME / Let's Encrypt validation requests
+    RewriteCond %{REQUEST_URI} ^/\.well-known/
+    RewriteRule ^ - [L]
+
+    # Keep direct /public/... URLs working
+    RewriteCond %{REQUEST_URI} ^/public(/|$)
+    RewriteRule ^ - [L]
+
+    # Send everything else into /public
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
+
+# Deny direct web access to sensitive application files
+<FilesMatch "^(\.env.*|\.git.*|composer\.(json|lock)|package(-lock)?\.json|artisan|phpunit\.xml|vite\.config\.js|README\.md|AGENTS\.md|CLAUDE\.md|boost\.json)$">
+    Require all denied
+</FilesMatch>
